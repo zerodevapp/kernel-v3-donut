@@ -1,8 +1,19 @@
 import "dotenv/config";
-import { createKernelAccount, createKernelAccountClient } from "@zerodev/sdk";
+import {
+  KernelV3ExecuteAbi,
+  createKernelAccount,
+  createKernelAccountClient,
+} from "@zerodev/sdk";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { privateKeyToAccount } from "viem/accounts";
-import { Hex, createPublicClient, http, zeroAddress } from "viem";
+import {
+  Hex,
+  createPublicClient,
+  getAbiItem,
+  http,
+  toFunctionSelector,
+  zeroAddress,
+} from "viem";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { signerToDonutValidator } from "./toDonutValidator";
 
@@ -31,6 +42,7 @@ const getEnableSig = async () => {
   });
   const donutValidator = await signerToDonutValidator(publicClient, {
     signer,
+    donutLimit: BigInt(1000000000000000000),
     validatorAddress: DONUT_VALIDATOR_ADDRESS,
   });
   const account = await createKernelAccount(publicClient, {
@@ -39,6 +51,12 @@ const getEnableSig = async () => {
       sudo: ecdsaValidator,
       regular: donutValidator,
       entryPoint: ENTRYPOINT_ADDRESS_V07,
+      executorData: {
+        selector: toFunctionSelector(
+          getAbiItem({ abi: KernelV3ExecuteAbi, name: "execute" })
+        ),
+        executor: zeroAddress,
+      },
     },
   });
   const accountAddress = account.address;
