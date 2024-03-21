@@ -17,8 +17,7 @@ import {
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { signerToDonutValidator } from "./toDonutValidator";
 
-// Make sure to set the DONUT_VALIDATOR_ADDRESS variable
-const DONUT_VALIDATOR_ADDRESS = zeroAddress;
+const DONUT_VALIDATOR_ADDRESS = "0xC26abD34b53C6E61ec8CbE34b841228E04CfFA62";
 if (
   !process.env.BUNDLER_RPC ||
   !process.env.PAYMASTER_RPC ||

@@ -25,6 +25,7 @@ import {
   type TypedDataDefinition,
   toHex,
   concatHex,
+  pad,
 } from "viem";
 import { toAccount } from "viem/accounts";
 import { signMessage, signTypedData } from "viem/actions";
@@ -97,7 +98,12 @@ export async function signerToDonutValidator<
     isPermissionValidator: false,
 
     async getEnableData() {
-      return concatHex([viemSigner.address, toHex(donutLimit)]);
+      return concatHex([
+        viemSigner.address,
+        pad(toHex(donutLimit), {
+          size: 32,
+        }),
+      ]);
     },
     async getNonceKey() {
       return 0n;
