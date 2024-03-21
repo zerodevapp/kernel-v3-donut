@@ -14,6 +14,7 @@ import {
   toFunctionSelector,
   zeroAddress,
 } from "viem";
+import { sepolia } from "viem/chains";
 import { ENTRYPOINT_ADDRESS_V07 } from "permissionless";
 import { signerToDonutValidator } from "./toDonutValidator";
 
@@ -32,6 +33,7 @@ const privateKey = process.env.PRIVATE_KEY as Hex;
 
 const publicClient = createPublicClient({
   transport: http(process.env.BUNDLER_RPC),
+  chain: sepolia,
 });
 const getEnableSig = async () => {
   const signer = privateKeyToAccount(privateKey);
