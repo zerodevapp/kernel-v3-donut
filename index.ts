@@ -3,6 +3,7 @@ import {
   KernelV3ExecuteAbi,
   createKernelAccount,
   createKernelAccountClient,
+  createZeroDevPaymasterClient,
 } from "@zerodev/sdk";
 import { signerToEcdsaValidator } from "@zerodev/ecdsa-validator";
 import { privateKeyToAccount } from "viem/accounts";
@@ -66,6 +67,26 @@ const getEnableSig = async () => {
   const enableSignature =
     await account.kernelPluginManager.getPluginEnableSignature(accountAddress);
   console.log("enableSignature: ", enableSignature);
+
+  const kernelClient = createKernelAccountClient({
+    account,
+    entryPoint: ENTRYPOINT_ADDRESS_V07,
+    chain: sepolia,
+    bundlerTransport: http(process.env.BUNDLER_RPC),
+    middleware: {
+      sponsorUserOperation: async ({ userOperation }) => {
+        const zeroDevPaymaster = createZeroDevPaymasterClient({
+          chain: sepolia,
+          transport: http(process.env.PAYMASTER_RPC),
+          entryPoint: ENTRYPOINT_ADDRESS_V07,
+        });
+        return zeroDevPaymaster.sponsorUserOperation({
+          userOperation,
+          entryPoint: ENTRYPOINT_ADDRESS_V07,
+        });
+      },
+    },
+  });
 };
 
 getEnableSig();
